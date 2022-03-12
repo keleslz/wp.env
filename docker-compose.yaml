@@ -1,5 +1,4 @@
 version: '3'
-# DOC https://hub.docker.com/_/wordpress
 
 services:
 
@@ -7,16 +6,22 @@ services:
     image: wordpress:php8.0-apache
     restart: always
     ports:
-      - 8080:80
+      - 8081:80
     environment:
       WORDPRESS_DB_HOST: ${DB_HOST}
       WORDPRESS_DB_USER: ${DB_USER}
       WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
       WORDPRESS_DB_NAME: ${DB_NAME}
+      WP_CACHE_HOME: ${WP_CACHE_HOME}
+      WP_DEBUG: ${WP_DEBUG}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER_ROOT}
+      DB_PASSWORD: ${DB_ROOT_PASSWORD}
+      DB_HOST: ${DB_HOST}
     depends_on:
       - db
     volumes:
-      - /wordpress:/var/www/html
+      - ./jbeauty:/var/www/html
 
 
   phpmyadmin:
@@ -30,6 +35,9 @@ services:
       PMA_PASSWORD: ${DB_ROOT_PASSWORD}
     depends_on:
       - db
+    volumes:
+      - ./cache:${WP_CACHE_HOME} #for WPCACHEHOME
+
 
   db:
     image: mysql:5.7
@@ -40,7 +48,7 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
-      - db:/var/lib/mysql
+      - ./db:/var/lib/mysql
 
 
 volumes:
